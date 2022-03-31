@@ -1,0 +1,14 @@
+api-module: ygoapi
+
+base:
+  application:
+    name: ygoapi
+  server:
+    port: 9800
+    enable: true
+
+    gin:
+      mode: release
+
+  logger:
+    level: info
