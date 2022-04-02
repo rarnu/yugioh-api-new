@@ -37,11 +37,18 @@ func (o OmegaDB) One(password int64, lang ISCString) (*dto.CardData, error) {
 				left join relations r on t.id = r.cardid
 				left join packs p on r.packid = p.id
 			where t.id = ? group by r.cardid`, tn), password).First(&data)
+
+	if data.Id == 0 {
+		return nil, fmt.Errorf("card %d not found", password)
+	}
 	data.Name = data.Name.ReplaceAll("&#64025;", "神")
 	data.Desc = data.Desc.ReplaceAll("&#64025;", "神")
 	data.Abbr = genPackName(lang, data.Abbr)
-	if data.Id == 0 {
-		return nil, fmt.Errorf("card %d not found", password)
+	if lang == "en" {
+		data.Desc = data.Desc.ReplaceAll("'''", "")
+	}
+	if lang == "tc" {
+		data.Name = data.Name.SubStringBeforeLast("【")
 	}
 	return &data, nil
 }
@@ -66,6 +73,9 @@ func (o OmegaDB) CardNameList(name ISCString, lang ISCString) ([]*dto.CardName, 
 	} else {
 		data.ForEach(func(item *dto.CardName) {
 			item.Name = item.Name.ReplaceAll("&#64025;", "神")
+			if lang == "tc" {
+				item.Name = item.Name.SubStringBeforeLast("【")
+			}
 		})
 		return data, nil
 	}
@@ -110,6 +120,12 @@ func (o OmegaDB) SearchCardList(req dto.ReqSearchOrigin) ([]*dto.CardData, error
 			item.Name = item.Name.ReplaceAll("&#64025;", "神")
 			item.Desc = item.Desc.ReplaceAll("&#64025;", "神")
 			item.Abbr = genPackName(req.Lang, item.Abbr)
+			if req.Lang == "en" {
+				item.Desc = item.Desc.ReplaceAll("'''", "")
+			}
+			if req.Lang == "tc" {
+				item.Name = item.Name.SubStringBeforeLast("【")
+			}
 		})
 		return list, nil
 	}
@@ -129,6 +145,9 @@ func (o OmegaDB) YdkFindCardNameList(req dto.ReqYdkFind) ([]*dto.CardName, error
 	} else {
 		data.ForEach(func(item *dto.CardName) {
 			item.Name = item.Name.ReplaceAll("&#64025;", "神")
+			if req.Lang == "tc" {
+				item.Name = item.Name.SubStringBeforeLast("【")
+			}
 		})
 		return data, nil
 	}
@@ -147,6 +166,9 @@ func (o OmegaDB) YdkNamesByIds(req dto.ReqYdkNames) ([]*dto.CardName, error) {
 	} else {
 		data.ForEach(func(item *dto.CardName) {
 			item.Name = item.Name.ReplaceAll("&#64025;", "神")
+			if req.Lang == "tc" {
+				item.Name = item.Name.SubStringBeforeLast("【")
+			}
 		})
 		return data, nil
 	}
