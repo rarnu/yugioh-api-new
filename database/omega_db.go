@@ -220,7 +220,9 @@ func genPackName(lang ISCString, abbr ISCString) ISCString {
 	if lang.ToLower() == "ko" {
 		lang = "kr"
 	}
-
+	if len([]rune(abbr)) != 4 {
+		abbr = "LWCG"
+	}
 	return abbr.ToUpper() + "-" + lang.ToUpper() + "0" + rstr
 }
 
