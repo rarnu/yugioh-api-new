@@ -6,7 +6,10 @@ import (
 	"github.com/isyscore/isc-gobase/time"
 	"log"
 	"os"
+	"path/filepath"
+	"tool/consts"
 	"tool/database"
+	"tool/html"
 	"tool/util"
 )
 
@@ -28,9 +31,6 @@ func exportLocalNewCardsSQL() {
 	// 计算最新和现有的差异
 	diffCards := util.CalcNewIds(omegaCardList, nameCardList)
 	diffSets := util.CalcNewIds(omegaSetList.ToList(), nameSetList.ToList())
-	diffSets.ForEach(func(id int64) {
-		log.Printf("new set id = %d", id)
-	})
 	log.Printf("new cards = %d, new sets = %d", diffCards.Size(), diffSets.Size())
 
 	if diffCards.Size() == 0 && diffSets.Size() == 0 {
@@ -69,11 +69,21 @@ func exportRemoteUndoneSQL() {
 	file.WriteFile(fmt.Sprintf("./remote_data_%s.sql", time.TimeToStringYmdHms(time.Now())), undoneCardSQLs+"\n"+undoneSetSQLs)
 }
 
+func downloadLastOmega() {
+	err := html.DownloadFile(consts.OMEGADB_URL, filepath.Join(".", consts.OMEGADB), func(progress int64, total int64) {
+		fmt.Printf("downloading %s, progress = %d/%d\r", consts.OMEGADB, progress, total)
+	})
+	if err != nil {
+		log.Printf("download %s failed, err = %v", consts.OMEGADB, err)
+	}
+}
+
 func main() {
 	args := os.Args
 	if len(args) < 2 {
-		log.Println("-n   -- check for new cards and sets")
-		log.Println("-e   -- export new data (donetime = 0)")
+		log.Println("-n		-- check for new cards and sets")
+		log.Println("-e		-- export new data (donetime = 0)")
+		log.Println("-d		-- download last omega")
 		return
 	}
 	if args[1] == "-n" {
@@ -82,5 +92,9 @@ func main() {
 
 	if args[1] == "-e" {
 		exportRemoteUndoneSQL()
+	}
+
+	if args[1] == "-d" {
+		downloadLastOmega()
 	}
 }

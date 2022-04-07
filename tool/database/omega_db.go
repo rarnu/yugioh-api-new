@@ -6,6 +6,7 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
+	"tool/html"
 )
 
 type OmegaDB struct {
@@ -49,7 +50,8 @@ func (o OmegaDB) GetCardSQLByIds(ids ISCList[int64]) ISCList[string] {
 	var list ISCList[*CardData]
 	o.om.Raw("select id, name from ja_texts where id in (?)", ids).Scan(&list)
 	return ListToMapFrom[*CardData, string](list).Map(func(card *CardData) string {
-		return fmt.Sprintf("insert into card_name_texts(id, kanji, kk, donetime) values (%d, '%s', '', 0);", card.Id, card.Name)
+		kk := html.CrawlingKaka(card.Name)
+		return fmt.Sprintf("insert into card_name_texts(id, kanji, kk, donetime) values (%d, '%s', '%s', 0);", card.Id, card.Name, kk)
 	})
 }
 
