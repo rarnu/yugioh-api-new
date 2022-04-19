@@ -1,10 +1,11 @@
 package test
 
 import (
-	. "github.com/isyscore/isc-gobase/isc"
 	"testing"
 	"ygoapi/database"
 	"ygoapi/japanese"
+
+	. "github.com/isyscore/isc-gobase/isc"
 )
 
 func TestRemoveKK(t *testing.T) {
@@ -27,9 +28,6 @@ func TestRemoveKK(t *testing.T) {
 
 func TestKK(t *testing.T) {
 	database.NewYgoName()
-	ts := database.YgoName.LastSync()
-	t.Logf("LastSync: %s", ts)
-
 	str1 := database.YgoName.NameKanjiKana("青眼の白龍")
 	t.Logf("%s", str1)
 }

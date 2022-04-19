@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ygoapi-service
+  labels:
+    app: ygoapi-service
+spec:
+  containers:
+    - name: ygoapi-service-container
+      image: ygoapi:latest
+      ports:
+        - containerPort: 9800
+      imagePullPolicy: IfNotPresent
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ygoapi-service
+  labels:
+    app: ygoapi-service
+spec:
+  externalTrafficPolicy: Cluster
+  ports:
+    - port: 9800
+      targetPort: 9800
+      protocol: TCP
+      nodePort: 30800
+  type: NodePort
+  selector:
+    app: ygoapi-service

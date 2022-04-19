@@ -1,6 +1,8 @@
 api-module: ygoapi
 
 base:
+  profiles:
+    active: local
   application:
     name: ygoapi
   server:
@@ -12,3 +14,14 @@ base:
 
   logger:
     level: info
+
+mysql:
+  host: mysql
+  # host: 10.211.55.12
+  port: 3306
+  # port: 30006
+  user: root
+  password: root
+
+sqlite:
+  host: ./files/OmegaDB.cdb

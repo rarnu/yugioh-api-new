@@ -5,6 +5,7 @@ import (
 	"github.com/isyscore/isc-gobase/time"
 	"golang.org/x/text/width"
 	"math/rand"
+	"ygoapi/config"
 	"ygoapi/dto"
 
 	. "github.com/isyscore/isc-gobase/isc"
@@ -20,7 +21,7 @@ type OmegaDB struct {
 var Omega OmegaDB
 
 func NewOmega() {
-	omega, err := gorm.Open(sqlite.Open("./files/OmegaDB.cdb"), &gorm.Config{})
+	omega, err := gorm.Open(sqlite.Open(config.SQLiteConfig.Host), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}

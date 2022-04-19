@@ -2,12 +2,14 @@ package database
 
 import (
 	"fmt"
+	"ygoapi/config"
+	"ygoapi/japanese"
+
 	. "github.com/isyscore/isc-gobase/isc"
 	"github.com/isyscore/isc-gobase/logger"
 	"golang.org/x/text/width"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"ygoapi/japanese"
 )
 
 type YgoNameDB struct {
@@ -17,7 +19,8 @@ type YgoNameDB struct {
 var YgoName YgoNameDB
 
 func NewYgoName() {
-	dsn := "root:root@tcp(127.0.0.1:3306)/YugiohAPI2?charset=utf8mb4&parseTime=True&loc=Local"
+	dsnFmt := "%s:%s@tcp(%s:%d)/YugiohAPI2?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := fmt.Sprintf(dsnFmt, config.MySQLConfig.User, config.MySQLConfig.Password, config.MySQLConfig.Host, config.MySQLConfig.Port)
 	ygo, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)

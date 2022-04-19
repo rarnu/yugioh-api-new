@@ -1,0 +1,24 @@
+FROM ubuntu:jammy
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Shanghai
+
+RUN apt update \
+    && apt install -y locales && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
+    && apt install -y dumb-init openjdk-8-jre dbus curl \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV LANG en_US.utf8
+
+ARG app=ygoapi
+ARG path=/home/${app}
+RUN mkdir -p ${path}
+COPY files ${path}/files
+COPY ygoapi ${path}
+COPY application.yml ${path}
+WORKDIR ${path}
+
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["./ygoapi"]
+
+FROM openjdk:8-jdk-alpine

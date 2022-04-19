@@ -29,6 +29,8 @@ github.com/isyscore/isc-gobase v1.0.4 h1:dUW4XZPpZhd7/UkYNg0rGCQQ53E/qOhZkv5kG4W
 github.com/isyscore/isc-gobase v1.0.4/go.mod h1:avtouAgSlD9y9UNZbHNv8ykbE7a9fpYc5dkV2ywP6cg=
 github.com/isyscore/isc-gobase v1.0.6 h1:GI4kMtAF0VOQ720fOEARpMe3r/vafPupd0KSyzdO6c4=
 github.com/isyscore/isc-gobase v1.0.6/go.mod h1:dQCqb4TDPSGDDmU7XBjLEhKeMbZkdLVadSsMhtAOEIs=
+github.com/isyscore/isc-gobase v1.0.8 h1:pBAcOtg+A/EBrlF8EeBuZu7XVkTs2JdnHMoES8cIGtU=
+github.com/isyscore/isc-gobase v1.0.8/go.mod h1:dQCqb4TDPSGDDmU7XBjLEhKeMbZkdLVadSsMhtAOEIs=
 github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD/E=
 github.com/jinzhu/inflection v1.0.0/go.mod h1:h+uFLlag+Qp1Va5pdKtLDYj+kHp5pxUVkryuEj+Srlc=
 github.com/jinzhu/now v1.1.4 h1:tHnRBy1i5F2Dh8BAFxqFzxKqqvezXrL2OW1TnX+Mlas=
