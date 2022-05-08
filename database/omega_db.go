@@ -42,15 +42,9 @@ func (o OmegaDB) One(password int64, lang ISCString) (*dto.CardData, error) {
 	if data.Id == 0 {
 		return nil, fmt.Errorf("card %d not found", password)
 	}
-	data.Name = data.Name.ReplaceAll("&#64025;", "神")
-	data.Desc = data.Desc.ReplaceAll("&#64025;", "神")
+	data.Name = ModifyName(lang, data.Id, data.Name)
+	data.Desc = ModifyDesc(lang, data.Id, data.Type, data.Desc)
 	data.Abbr = genPackName(lang, data.Abbr)
-	if lang == "en" {
-		data.Desc = data.Desc.ReplaceAll("'''", "")
-	}
-	if lang == "tc" {
-		data.Name = data.Name.SubStringBeforeLast("【")
-	}
 	return &data, nil
 }
 
@@ -73,10 +67,7 @@ func (o OmegaDB) CardNameList(name ISCString, lang ISCString) ([]*dto.CardName, 
 		return nil, fmt.Errorf("card not found")
 	} else {
 		data.ForEach(func(item *dto.CardName) {
-			item.Name = item.Name.ReplaceAll("&#64025;", "神")
-			if lang == "tc" {
-				item.Name = item.Name.SubStringBeforeLast("【")
-			}
+			item.Name = ModifyName(lang, item.Id, item.Name)
 		})
 		return data, nil
 	}
@@ -118,15 +109,9 @@ func (o OmegaDB) SearchCardList(req dto.ReqSearchOrigin) ([]*dto.CardData, error
 		return nil, fmt.Errorf("card not found")
 	} else {
 		list.ForEach(func(item *dto.CardData) {
-			item.Name = item.Name.ReplaceAll("&#64025;", "神")
-			item.Desc = item.Desc.ReplaceAll("&#64025;", "神")
+			item.Name = ModifyName(req.Lang, item.Id, item.Name)
+			item.Desc = ModifyDesc(req.Lang, item.Id, item.Type, item.Desc)
 			item.Abbr = genPackName(req.Lang, item.Abbr)
-			if req.Lang == "en" {
-				item.Desc = item.Desc.ReplaceAll("'''", "")
-			}
-			if req.Lang == "tc" {
-				item.Name = item.Name.SubStringBeforeLast("【")
-			}
 		})
 		return list, nil
 	}
@@ -145,10 +130,7 @@ func (o OmegaDB) YdkFindCardNameList(req dto.ReqYdkFind) ([]*dto.CardName, error
 		return nil, fmt.Errorf("card not found")
 	} else {
 		data.ForEach(func(item *dto.CardName) {
-			item.Name = item.Name.ReplaceAll("&#64025;", "神")
-			if req.Lang == "tc" {
-				item.Name = item.Name.SubStringBeforeLast("【")
-			}
+			item.Name = ModifyName(req.Lang, item.Id, item.Name)
 		})
 		return data, nil
 	}
@@ -166,10 +148,7 @@ func (o OmegaDB) YdkNamesByIds(req dto.ReqYdkNames) ([]*dto.CardName, error) {
 		return nil, fmt.Errorf("card not found")
 	} else {
 		data.ForEach(func(item *dto.CardName) {
-			item.Name = item.Name.ReplaceAll("&#64025;", "神")
-			if req.Lang == "tc" {
-				item.Name = item.Name.SubStringBeforeLast("【")
-			}
+			item.Name = ModifyName(req.Lang, item.Id, item.Name)
 		})
 		return data, nil
 	}
