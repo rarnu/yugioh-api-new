@@ -13,7 +13,7 @@ func CrawlingKaka(name string) string {
 	u0, _ := encoding.UrlEncoding(name, encoding.EUCJP)
 	b, _ := http.GetSimple(fmt.Sprintf(consts.WIKI_URL, u0))
 	// 这里拿到的是日语编码的字符串，要改成utf8的，否则下面无法操作
-	tmp, _ := encoding.StringToUTF8(string(b), encoding.EUCJP)
+	tmp, _ := encoding.StringToUTF8(string(b.([]byte)), encoding.EUCJP)
 	nameStr := ISCString(tmp).SubStringAfter("<h2 id=\"content_1_0\">《").SubStringBefore("》")
 	nameStr = nameStr.ReplaceAll("<rb>", "").ReplaceAll("</rb>", "").
 		ReplaceAll("<rp>", "").ReplaceAll("</rp>", "").

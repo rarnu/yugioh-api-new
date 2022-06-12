@@ -64,3 +64,19 @@ func (o YgoNameDB) GetUndoneSets() ISCList[string] {
 		return fmt.Sprintf("insert into set_name_texts(id, en, kanji, kk, donetime) values (%d, '%s', '%s', '%s', 0);", item.Id, item.En, item.Kanji, item.Kk)
 	})
 }
+
+func (o YgoNameDB) GetUpdateCards() ISCList[string] {
+	var list ISCList[*CardNameData]
+	o.om.Raw("select id, kanji, kk from card_name_texts where donetime = 0").Scan(&list)
+	return ListToMapFrom[*CardNameData, string](list).Map(func(item *CardNameData) string {
+		return fmt.Sprintf("update card_name_texts set kk='%s' where id = %d;", item.Kk, item.Id)
+	})
+}
+
+func (o YgoNameDB) GetUpdateSets() ISCList[string] {
+	var list ISCList[*SetNameData]
+	o.om.Raw("select id, en, kanji, kk from set_name_texts where donetime = 0").Scan(&list)
+	return ListToMapFrom[*SetNameData, string](list).Map(func(item *SetNameData) string {
+		return fmt.Sprintf("update set_name_texts set kk='%s' where id = %d;", item.Kk, item.Id)
+	})
+}

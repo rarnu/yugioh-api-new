@@ -69,6 +69,27 @@ func exportRemoteUndoneSQL() {
 	file.WriteFile(fmt.Sprintf("./remote_data_%s.sql", time.TimeToStringYmdHms(time.Now())), undoneCardSQLs+"\n"+undoneSetSQLs)
 }
 
+func exportRemoteUpdateSQL() {
+	// 连接数据库
+	database.NewYgoName()
+	// 获取新的卡片和SET
+	updateCards := database.YgoName.GetUpdateCards()
+	updateSets := database.YgoName.GetUpdateSets()
+
+	log.Printf("update cards = %d, sets = %d", updateCards.Size(), updateSets.Size())
+
+	if updateCards.Size() == 0 && updateSets.Size() == 0 {
+		log.Printf("no update cards or sets")
+		return
+	}
+
+	// SQL语句写入文件里
+	updateCardSQLs := updateCards.JoinToStringFull("\n", "", "", func(s string) string { return s })
+	updateSetSQLs := updateSets.JoinToStringFull("\n", "", "", func(s string) string { return s })
+	file.WriteFile(fmt.Sprintf("./update_data_%s.sql", time.TimeToStringYmdHms(time.Now())), updateCardSQLs+"\n"+updateSetSQLs)
+
+}
+
 func downloadLastOmega() {
 	err := html.DownloadFile(consts.OMEGADB_URL, filepath.Join(".", consts.OMEGADB), func(progress int64, total int64) {
 		fmt.Printf("downloading %s, progress = %d/%d\r", consts.OMEGADB, progress, total)
@@ -83,6 +104,7 @@ func main() {
 	if len(args) < 2 {
 		log.Println("-n		-- check for new cards and sets")
 		log.Println("-e		-- export new data (donetime = 0)")
+		log.Println("-u     -- export update data (donetime = 0)")
 		log.Println("-d		-- download last omega")
 		return
 	}
@@ -92,6 +114,10 @@ func main() {
 
 	if args[1] == "-e" {
 		exportRemoteUndoneSQL()
+	}
+
+	if args[1] == "-u" {
+		exportRemoteUpdateSQL()
 	}
 
 	if args[1] == "-d" {
