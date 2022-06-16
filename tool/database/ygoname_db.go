@@ -77,6 +77,6 @@ func (o YgoNameDB) GetUpdateSets() ISCList[string] {
 	var list ISCList[*SetNameData]
 	o.om.Raw("select id, en, kanji, kk from set_name_texts where donetime = 0").Scan(&list)
 	return ListToMapFrom[*SetNameData, string](list).Map(func(item *SetNameData) string {
-		return fmt.Sprintf("update set_name_texts set kk='%s' where id = %d;", item.Kk, item.Id)
+		return fmt.Sprintf("update set_name_texts set kanji='%s', kk='%s' where id = %d and en='%s';", item.Kanji, item.Kk, item.Id, item.En)
 	})
 }
