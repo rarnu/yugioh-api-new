@@ -31,7 +31,7 @@ func NewOmega() {
 
 func (o OmegaDB) One(password int64, lang ISCString) (*dto.CardData, error) {
 	var data dto.CardData
-	tn := getTextTableName(lang)
+	tn := o.getTextTableName(lang)
 	o.om.Raw(
 		fmt.Sprintf(`select t.id, t.name, t.desc, d.type, d.atk, d.def, d.level, d.race, d.attribute, p.abbr from %s t
 				left join datas d on t.id = d.id
@@ -48,9 +48,21 @@ func (o OmegaDB) One(password int64, lang ISCString) (*dto.CardData, error) {
 	return &data, nil
 }
 
+func (o OmegaDB) RushOne(password int64, lang ISCString) (*dto.CardData, error) {
+	var data dto.CardData
+	tn := o.getTextTableName(lang)
+	o.om.Raw(fmt.Sprintf(`select t.id, t.name, t.desc, d.type, d.atk, d.def, d.level, d.race, d.attribute, '' as 'abbr' from %s t left join datas d on t.id = d.id where t.id=?`, tn), password).First(&data)
+	if data.Id == 0 {
+		return nil, fmt.Errorf("card %d not found", password)
+	}
+	data.Desc = data.Desc.ReplaceAll("'''", "")
+	data.Desc = genRDDesc(lang, data.Desc)
+	return &data, nil
+}
+
 func (o OmegaDB) Random(lang ISCString) (*dto.CardData, error) {
 	var id int64 = 0
-	tn := getTextTableName(lang)
+	tn := o.getTextTableName(lang)
 	o.om.Raw(fmt.Sprintf(`select id from %s where id >= 10000 and id <= 99999999 order by RANDOM() limit 1`, tn)).First(&id)
 	if id == 0 {
 		return nil, fmt.Errorf("card not found")
@@ -58,8 +70,18 @@ func (o OmegaDB) Random(lang ISCString) (*dto.CardData, error) {
 	return o.One(id, lang)
 }
 
+func (o OmegaDB) RushRandom(lang ISCString) (*dto.CardData, error) {
+	var id int64 = 0
+	tn := o.getTextTableName(lang)
+	o.om.Raw(fmt.Sprintf(`select id from %s where id >= 120100000 and id <= 120999999 order by RANDOM() limit 1`, tn)).First(&id)
+	if id == 0 {
+		return nil, fmt.Errorf("card not found")
+	}
+	return o.RushOne(id, lang)
+}
+
 func (o OmegaDB) CardNameList(name ISCString, lang ISCString) ([]*dto.CardName, error) {
-	tn := getTextTableName(lang)
+	tn := o.getTextTableName(lang)
 	var data ISCList[*dto.CardName]
 	o.om.Raw(fmt.Sprintf("select id, name from %s where name like '%%%s%%' or name like '%%%s%%' or name like '%%%s%%' limit 10", tn,
 		width.Widen.String(string(name)), width.Narrow.String(string(name)), name)).Scan(&data)
@@ -73,8 +95,23 @@ func (o OmegaDB) CardNameList(name ISCString, lang ISCString) ([]*dto.CardName, 
 	}
 }
 
+func (o OmegaDB) RushCardNameList(name ISCString, lang ISCString) ([]*dto.CardName, error) {
+	tn := o.getTextTableName(lang)
+	var data ISCList[*dto.CardName]
+	o.om.Raw(fmt.Sprintf("select id, name from %s where (name like '%%%s%%' or name like '%%%s%%' or name like '%%%s%%') and (id >= 120100000 and id <= 120999999) limit 10", tn,
+		width.Widen.String(string(name)), width.Narrow.String(string(name)), name)).Scan(&data)
+	if len(data) == 0 {
+		return nil, fmt.Errorf("card not found")
+	} else {
+		data.ForEach(func(item *dto.CardName) {
+			item.Name = ModifyName(lang, item.Id, item.Name)
+		})
+		return data, nil
+	}
+}
+
 func (o OmegaDB) SearchCardList(req dto.ReqSearchOrigin) ([]*dto.CardData, error) {
-	tn := getTextTableName(req.Lang)
+	tn := o.getTextTableName(req.Lang)
 	var list ISCList[*dto.CardData]
 	sql := fmt.Sprintf(`select t.id, t.name, t.desc, d.type, d.atk, d.def, d.level, d.race, d.attribute, p.abbr from %s t 
 					left join datas d on t.id = d.id
@@ -118,7 +155,7 @@ func (o OmegaDB) SearchCardList(req dto.ReqSearchOrigin) ([]*dto.CardData, error
 }
 
 func (o OmegaDB) YdkFindCardNameList(req dto.ReqYdkFind) ([]*dto.CardName, error) {
-	tn := getTextTableName(req.Lang)
+	tn := o.getTextTableName(req.Lang)
 	kf := "name"
 	if req.ByEffect {
 		kf = "desc"
@@ -137,7 +174,7 @@ func (o OmegaDB) YdkFindCardNameList(req dto.ReqYdkFind) ([]*dto.CardName, error
 }
 
 func (o OmegaDB) YdkNamesByIds(req dto.ReqYdkNames) ([]*dto.CardName, error) {
-	tn := getTextTableName(req.Lang)
+	tn := o.getTextTableName(req.Lang)
 	instr := req.Ids.JoinToStringFull(",", "", "", func(item int64) string {
 		return ToString(item)
 	})
@@ -160,7 +197,7 @@ func (o OmegaDB) CardCount() int {
 	return cnt
 }
 
-func getTextTableName(lang ISCString) ISCString {
+func (o OmegaDB) getTextTableName(lang ISCString) ISCString {
 	tn := ISCString("ja_texts")
 	switch lang {
 	case "sc":
@@ -204,6 +241,33 @@ func genPackName(lang ISCString, abbr ISCString) ISCString {
 		abbr = "LWCG"
 	}
 	return abbr.ToUpper() + "-" + lang.ToUpper() + "0" + rstr
+}
+
+func genRDDesc(lang ISCString, desc ISCString) ISCString {
+	// RD/KP01-SC000
+	if desc.StartsWith("RD") {
+		return desc
+	}
+	str := ISCString("RD/LWCF-")
+	if lang == "sc" {
+		str += "SC"
+	} else if lang == "en" {
+		str += "EN"
+	} else {
+		str += "JP"
+	}
+	rand.Seed(time.Now().UnixNano())
+	r := rand.Intn(100)
+	if r == 0 {
+		r = 1
+	}
+	rstr := ISCString(ToString(r))
+	if len(rstr) < 2 {
+		rstr = "0" + rstr
+	}
+	str += "0" + rstr
+	desc = str + "\r\n" + desc
+	return desc
 }
 
 func ToDBStr(str ISCString) ISCString {

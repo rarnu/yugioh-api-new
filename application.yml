@@ -17,11 +17,13 @@ base:
 
 mysql:
   host: 127.0.0.1
-  # host: 10.211.55.12
   port: 3306
-  # port: 30006
   user: root
   password: root
 
 sqlite:
   host: ./files/OmegaDB.cdb
+
+rushduel:
+  jp: ./files/RushDuelJP.cdb
+  cn: ./files/RushDuelCN.cdb

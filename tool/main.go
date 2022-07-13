@@ -10,6 +10,7 @@ import (
 	"tool/consts"
 	"tool/database"
 	"tool/html"
+	"tool/rushduel"
 	"tool/util"
 )
 
@@ -122,5 +123,9 @@ func main() {
 
 	if args[1] == "-d" {
 		downloadLastOmega()
+	}
+
+	if args[1] == "-rd" {
+		rushduel.ExportRushDuelDatabase()
 	}
 }
