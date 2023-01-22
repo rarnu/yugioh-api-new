@@ -41,6 +41,12 @@ type ReqKKName struct {
 	Name ISCString `json:"name"`
 }
 
+type ReqTranslate struct {
+	Query  ISCString `json:"query"`
+	KK     bool      `json:"kk"`
+	KKMode ISCString `json:"kkMode"` // 可选值为 effect/normal
+}
+
 func ReqSearchToOrigin(r ReqSearch) ReqSearchOrigin {
 	return ReqSearchOrigin{
 		Key:         r.Key,

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"ygoapi/config"
 	"ygoapi/database"
 	"ygoapi/japanese"
@@ -18,9 +17,10 @@ func main() {
 	database.NewYgoName()
 	database.NewRush()
 	japanese.NewKanjiKanaData()
+	japanese.NewTranslateData()
 
 	// 注册路由
-	(server.Engine().(*gin.Engine)).LoadHTMLGlob("./files/*.html")
+	server.Engine().LoadHTMLGlob("./files/*.html")
 	// server.Engine().LoadHTMLGlob("./files/*.html")
 	server.Engine().Static("/assets", "./assets")
 	server.RegisterRoute("/", server.HmAll, route.ApiIndex)
@@ -42,6 +42,7 @@ func main() {
 	server.RegisterRoute("/api/rushduel/list", server.HmAll, route.ApiRushGetCardList)
 	server.RegisterRoute("/api/rushduel/card/:password", server.HmAll, route.ApiRushGetOneCard)
 	server.RegisterRoute("/api/rushduel/random", server.HmAll, route.ApiRushRandomCard)
+	server.RegisterRoute("/api/common/translate", server.HmPost, route.ApiTranslate)
 	// 启动服务
 	server.StartServer()
 }

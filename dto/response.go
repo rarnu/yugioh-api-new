@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"github.com/isyscore/isc-gobase/isc"
+	. "github.com/isyscore/isc-gobase/isc"
 	"github.com/isyscore/isc-gobase/server/rsp"
 )
 
@@ -18,5 +18,10 @@ type RespCommonCount struct {
 
 type RespCommonString struct {
 	rsp.ResponseBase
-	Data isc.ISCString `json:"data"`
+	Data ISCString `json:"data"`
+}
+
+type RespTranslate struct {
+	rsp.ResponseBase
+	Data ISCString `json:"data"`
 }

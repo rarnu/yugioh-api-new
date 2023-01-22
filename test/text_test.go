@@ -2,9 +2,12 @@ package test
 
 import (
 	"fmt"
+	. "github.com/isyscore/isc-gobase/isc"
+	"strconv"
 	"strings"
 	"testing"
 	"unicode"
+	"ygoapi/japanese"
 )
 
 func TestText(t *testing.T) {
@@ -38,4 +41,15 @@ func TestCharSet(t *testing.T) {
 
 	fmt.Println(strings.ToLowerSpecial(numConv, s))
 	fmt.Println(strings.ToUpperSpecial(numConv, s))
+}
+
+func TestInput(t *testing.T) {
+	content := ISCList[rune]("abcdefghijklmnopqrstuvwxyz1234567890")
+	input := string(content[:10]) + strconv.Itoa(content.Size()) + string(content[content.Size()-10:])
+	t.Logf(input)
+}
+
+func TestTranslate(t *testing.T) {
+	text := japanese.Translate("测试一下")
+	t.Logf("text: %s", text)
 }
