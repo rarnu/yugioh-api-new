@@ -13,7 +13,7 @@ const pageurl = "https://yugipedia.com/wiki/"
 func ParseHtml(name ISCString) (ISCString, bool, ISCList[ISCString]) {
 	urlName := name.ReplaceAll(" ", "_")
 	url := pageurl + urlName
-	bHtml, _ := h0.GetSimple(string(url))
+	_, _, bHtml, _ := h0.GetSimple(string(url))
 	htmlStr := ISCString(bHtml.([]byte))
 	isLegend := htmlStr.Contains("<dd><a href=\"/wiki/Legend_Card\" title=\"Legend Card\">Legend Card</a></dd>")
 	isMaximum := htmlStr.Contains("<dd><a href=\"/wiki/Requires_Maximum_Mode\" title=\"Requires Maximum Mode\">Requires Maximum Mode</a></dd>")

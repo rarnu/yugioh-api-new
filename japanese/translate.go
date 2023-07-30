@@ -37,7 +37,7 @@ type TransResult struct {
 
 func Translate(content ISCString) ISCString {
 	salt := goid.GenerateUUID()
-	m := map[string]string{
+	m := map[string]any{
 		"q":        string(content),
 		"from":     "zh-CHS",
 		"to":       "ja",
@@ -47,7 +47,7 @@ func Translate(content ISCString) ISCString {
 		"signType": "v3",
 		"sign":     sign(ISCList[rune](content), salt),
 	}
-	ret, err := h0.PostForm(YoudaoUrl, nil, m)
+	_, _, ret, err := h0.PostForm(YoudaoUrl, nil, m)
 	if err != nil {
 		return ""
 	}

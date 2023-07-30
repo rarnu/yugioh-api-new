@@ -26,7 +26,7 @@ func downloadJson() ISCList[ISCString] {
 		var jsonstr any
 		if !f0.FileExists(string(fn)) {
 			url := baseurl.ReplaceAll("{{offset}}", string(offset.ToString()))
-			jsonstr, _ = h0.Get(string(url), http.Header{"authority": {"yugipedia.com"}}, nil)
+			_, _, jsonstr, _ = h0.Get(string(url), http.Header{"authority": {"yugipedia.com"}}, nil)
 			f0.WriteFile(filepath.Join(dir, string(fn)), string(jsonstr.([]byte)))
 		} else {
 			jsonstr = f0.ReadFileBytes(string(fn))
@@ -48,7 +48,7 @@ func downloadJson() ISCList[ISCString] {
 		var jsonstr any
 		if !f0.FileExists(string(fn)) {
 			url := magicurl.ReplaceAll("{{offset}}", string(offset.ToString()))
-			jsonstr, _ = h0.Get(string(url), http.Header{"authority": {"yugipedia.com"}}, nil)
+			_, _, jsonstr, _ = h0.Get(string(url), http.Header{"authority": {"yugipedia.com"}}, nil)
 			f0.WriteFile(filepath.Join(dir, string(fn)), string(jsonstr.([]byte)))
 		} else {
 			jsonstr = f0.ReadFileBytes(string(fn))
