@@ -81,7 +81,7 @@ func ApiGetCardList(c *gin.Context) {
 }
 
 func ApiGetOneCard(c *gin.Context) {
-	apass := ISCString(c.Param("password"))
+	apass := c.Param("password")
 	lang := ISCString(c.Query("lang"))
 	if lang == "" {
 		lang = "jp"
@@ -329,7 +329,7 @@ func ApiKKNormalText(c *gin.Context) {
 }
 
 func ApiRushGetOneCard(c *gin.Context) {
-	apass := ISCString(c.Param("password"))
+	apass := c.Param("password")
 	lang := ISCString(c.Query("lang"))
 	if lang == "" {
 		lang = "jp"
@@ -455,5 +455,15 @@ func ApiTranslate(c *gin.Context) {
 			ResponseBase: rsp.ResponseBase{Code: 0, Message: ""},
 			Data:         retText,
 		})
+	}
+}
+
+func ApiGetCardEffectDetail(c *gin.Context) {
+	apass := c.Param("password")
+	apassInt := ToInt64(apass)
+	if data, err := database.YgoName.GetCardEffectDetail(apassInt); err == nil {
+		c.JSON(http.StatusOK, data)
+	} else {
+		c.JSON(http.StatusInternalServerError, rsp.ResponseBase{Code: http.StatusInternalServerError, Message: err.Error()})
 	}
 }

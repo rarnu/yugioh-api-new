@@ -3,7 +3,8 @@ package database
 import (
 	"fmt"
 	. "github.com/isyscore/isc-gobase/isc"
-	"gorm.io/driver/sqlite"
+	// "gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 	"log"
 	"tool/html"

@@ -1,8 +1,10 @@
 package database
 
 import (
+	"encoding/json"
 	"fmt"
 	"ygoapi/config"
+	"ygoapi/dto"
 	"ygoapi/japanese"
 
 	. "github.com/isyscore/isc-gobase/isc"
@@ -113,4 +115,26 @@ func (y YgoNameDB) NormalKanjiKana(name ISCString) ISCString {
 		e2 = e2.ReplaceAll(fmt.Sprintf("{{%d}}", i), string(kk))
 	}
 	return e2
+}
+
+func (o YgoNameDB) GetCardEffectDetail(cardId int64) (*dto.CardEffectData, error) {
+	var data dto.CardEffectData
+	o.om.Raw("select * from card_effect where id = ?", cardId).First(&data)
+	if data.Id == 0 {
+		return nil, fmt.Errorf("card %d not found", cardId)
+	}
+
+	var list []*dto.CardEffectDetailData
+	o.om.Raw("select * from card_effect_detail where card_id = ?", cardId).Scan(&list)
+	for i := 0; i < len(list); i++ {
+		if list[i].EffectOpt != "" {
+			var opts []string
+			_ = json.Unmarshal([]byte(list[i].EffectOpt), &opts)
+			list[i].EffectOptions = opts
+		}
+	}
+
+	data.Detail = list
+
+	return &data, nil
 }

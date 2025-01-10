@@ -10,7 +10,8 @@ import (
 
 	. "github.com/isyscore/isc-gobase/isc"
 	"github.com/isyscore/isc-gobase/logger"
-	"gorm.io/driver/sqlite"
+	//"gorm.io/driver/sqlite"
+	"github.com/glebarez/sqlite"
 	"gorm.io/gorm"
 )
 
